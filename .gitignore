@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Hugging Face / model artifacts
+outputs/
+checkpoints/
+adapter_model/
+*.bin
+*.pt
+*.pth
+*.safetensors
+
+# Data
+data/raw/
+data/processed/
+*.csv
+*.jsonl
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs
+*.log
