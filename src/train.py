@@ -1,80 +1,37 @@
 import torch
+import unsloth
 from datasets import load_dataset
-from peft import (
-    LoraConfig,
-    get_peft_model,
-    prepare_model_for_kbit_training,
-)
-from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from trl import SFTConfig, SFTTrainer
+from unsloth import FastLanguageModel
 
-MODEL_NAME = "Qwen/Qwen2.5-7B-Instruct"
+MODEL_NAME = "unsloth/Qwen2.5-7B-Instruct"
 DATASET_NAME = "HuggingFaceH4/no_robots"
-OUTPUT_DIR = "outputs/qwen-no-robots-qlora"
+OUTPUT_DIR = "outputs/qwen-no-robots-qlora-unsloth"
+MAX_SEQ_LENGTH = 1024
 
 
-def keep_messages_only(example):
-    return {"messages": example["messages"]}
+def format_chat(example, tokenizer):
+    text = tokenizer.apply_chat_template(
+        example["messages"],
+        tokenize=False,
+        add_generation_prompt=False,
+    )
+    return {"text": text}
 
 
 def main():
-    print("Loading dataset...")
-    dataset = load_dataset(DATASET_NAME)
-
-    train_dataset = (
-        dataset["train"]
-        .select(range(100))
-        .map(
-            keep_messages_only,
-            remove_columns=dataset["train"].column_names,
-        )
-    )
-    eval_dataset = (
-        dataset["test"]
-        .select(range(50))
-        .map(
-            keep_messages_only,
-            remove_columns=dataset["test"].column_names,
-        )
-    )
-
-    print("Train columns:", train_dataset.column_names)
-    print("Eval columns:", eval_dataset.column_names)
-    print("Sample example:", train_dataset[0])
-
-    print("Loading tokenizer...")
-    tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, use_fast=True)
-
-    if tokenizer.pad_token is None:
-        tokenizer.pad_token = tokenizer.eos_token
-
-    print("Configuring 4-bit quantization...")
-    bnb_config = BitsAndBytesConfig(
-        load_in_4bit=True,
-        bnb_4bit_quant_type="nf4",
-        bnb_4bit_use_double_quant=True,
-        bnb_4bit_compute_dtype=torch.float16,
-    )
-
-    print("Loading base model...")
-    model = AutoModelForCausalLM.from_pretrained(
-        MODEL_NAME,
-        quantization_config=bnb_config,
-        device_map="auto",
+    print("Loading model...")
+    model, tokenizer = FastLanguageModel.from_pretrained(
+        model_name=MODEL_NAME,
+        max_seq_length=MAX_SEQ_LENGTH,
         dtype=torch.float16,
+        load_in_4bit=True,
     )
 
-    model.config.use_cache = False
-
-    print("Preparing model for k-bit training...")
-    model = prepare_model_for_kbit_training(model)
-
-    peft_config = LoraConfig(
+    print("Adding LoRA adapters...")
+    model = FastLanguageModel.get_peft_model(
+        model,
         r=16,
-        lora_alpha=32,
-        lora_dropout=0.05,
-        bias="none",
-        task_type="CAUSAL_LM",
         target_modules=[
             "q_proj",
             "k_proj",
@@ -84,58 +41,60 @@ def main():
             "up_proj",
             "down_proj",
         ],
+        lora_alpha=32,
+        lora_dropout=0.05,
+        bias="none",
+        use_gradient_checkpointing="unsloth",
+        random_state=42,
     )
 
-    print("Attaching LoRA adapters...")
-    model = get_peft_model(model, peft_config)
+    print("Loading dataset...")
+    dataset = load_dataset(DATASET_NAME)
+    train_dataset = dataset["train"].select(range(100))
+    eval_dataset = dataset["test"].select(range(50))
 
-    model.print_trainable_parameters()
+    print("Formatting dataset...")
+    train_dataset = train_dataset.map(lambda x: format_chat(x, tokenizer))
+    eval_dataset = eval_dataset.map(lambda x: format_chat(x, tokenizer))
 
-    all_dtypes = sorted({str(p.dtype) for p in model.parameters()})
-    trainable_dtypes = sorted(
-        {str(p.dtype) for p in model.parameters() if p.requires_grad}
-    )
-    print("All parameter dtypes:", all_dtypes)
-    print("Trainable parameter dtypes:", trainable_dtypes)
+    print("Sample text:")
+    print(train_dataset[0]["text"][:500])
 
-    training_args = SFTConfig(
+    args = SFTConfig(
         output_dir=OUTPUT_DIR,
+        dataset_text_field="text",
+        max_length=MAX_SEQ_LENGTH,
         per_device_train_batch_size=1,
         per_device_eval_batch_size=1,
         gradient_accumulation_steps=8,
         num_train_epochs=1,
         learning_rate=2e-4,
-        logging_steps=10,
+        logging_steps=1,
         eval_strategy="steps",
-        eval_steps=25,
-        save_steps=25,
+        eval_steps=10,
+        save_steps=10,
         save_total_limit=2,
         fp16=True,
         bf16=False,
-        gradient_checkpointing=True,
+        optim="adamw_8bit",
         report_to="none",
-        remove_unused_columns=False,
-        max_length=1024,
         packing=False,
-        optim="paged_adamw_8bit",
-        max_grad_norm=0.3,
     )
 
     trainer = SFTTrainer(
         model=model,
-        args=training_args,
+        tokenizer=tokenizer,
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
-        processing_class=tokenizer,
+        args=args,
     )
 
     print("Starting training...")
     trainer.train()
 
     print("Saving adapter...")
-    trainer.model.save_pretrained(f"{OUTPUT_DIR}/final_adapter")
+    model.save_pretrained(f"{OUTPUT_DIR}/final_adapter")
     tokenizer.save_pretrained(f"{OUTPUT_DIR}/final_adapter")
-
     print("Done.")
 
 
