@@ -1,0 +1,22 @@
+[
+  {
+    "category": "explanation",
+    "prompt": "Explain QLoRA in plain English."
+  },
+  {
+    "category": "rewrite",
+    "prompt": "Rewrite this sentence to sound more professional: we messed up the deployment and need to fix it fast."
+  },
+  {
+    "category": "brainstorm",
+    "prompt": "Give me three creative ideas for a neighborhood coffee shop promotion."
+  },
+  {
+    "category": "summary",
+    "prompt": "Summarize the main difference between supervised learning and reinforcement learning."
+  },
+  {
+    "category": "coding",
+    "prompt": "Write a short Python function that checks whether a string is a palindrome."
+  }
+]
