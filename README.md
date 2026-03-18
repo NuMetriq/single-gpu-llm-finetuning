@@ -241,7 +241,7 @@ On a coding-style prompt, the adapter followed the instruction more literally an
 
 **Takeaway**: the adapter tended toward brevity and literalness, while the base model remained more robust.
 
-### 3. 
+### 3. Neighborhood coffee shop promotion ideas
 
 
 On a business-idea prompt, the adapter gave a stronger response. Its answer was concise, practical, and immediately usable. The base model was more elaborate and imaginative, but less focused.
