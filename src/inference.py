@@ -7,7 +7,7 @@ from peft import PeftModel
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
 BASE_MODEL_NAME = "Qwen/Qwen2.5-7B-Instruct"
-ADAPTER_PATH = "outputs/qwen-no-robots-qlora-unsloth/final_adapter"
+ADAPTER_PATH = "outputs/qwen-no-robots-qlora-unsloth-500/final_adapter"
 MAX_NEW_TOKENS = 200
 
 PROMPTS = [
@@ -124,10 +124,12 @@ def main():
         )
 
     os.makedirs("outputs/eval", exist_ok=True)
-    with open("outputs/eval/base_vs_adapter_results.json", "w", encoding="utf-8") as f:
+    with open(
+        "outputs/eval/base_vs_adapter_results_500.json", "w", encoding="utf-8"
+    ) as f:
         json.dump(results, f, indent=2, ensure_ascii=False)
 
-    print("\nSaved results to outputs/eval/base_vs_adapter_results.json")
+    print("\nSaved results to outputs/eval/base_vs_adapter_results_500.json")
 
 
 if __name__ == "__main__":

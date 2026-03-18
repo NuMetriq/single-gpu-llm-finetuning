@@ -6,7 +6,7 @@ from unsloth import FastLanguageModel
 
 MODEL_NAME = "unsloth/Qwen2.5-7B-Instruct"
 DATASET_NAME = "HuggingFaceH4/no_robots"
-OUTPUT_DIR = "outputs/qwen-no-robots-qlora-unsloth"
+OUTPUT_DIR = "outputs/qwen-no-robots-qlora-unsloth-500"
 MAX_SEQ_LENGTH = 1024
 
 
@@ -50,8 +50,8 @@ def main():
 
     print("Loading dataset...")
     dataset = load_dataset(DATASET_NAME)
-    train_dataset = dataset["train"].select(range(100))
-    eval_dataset = dataset["test"].select(range(50))
+    train_dataset = dataset["train"].select(range(500))
+    eval_dataset = dataset["test"].select(range(100))
 
     print("Formatting dataset...")
     train_dataset = train_dataset.map(lambda x: format_chat(x, tokenizer))
