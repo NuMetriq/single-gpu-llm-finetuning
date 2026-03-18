@@ -3,6 +3,8 @@ __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
+
+# Virtual environments
 .venv/
 venv/
 env/
@@ -10,22 +12,28 @@ env/
 # Jupyter
 .ipynb_checkpoints/
 
-# Hugging Face / model artifacts
+# Outputs / checkpoints
 outputs/
 checkpoints/
 adapter_model/
+*/checkpoint-*/
 *.bin
 *.pt
 *.pth
 *.safetensors
 
-# Data
+# Data caches
 data/raw/
 data/processed/
-*.csv
-*.jsonl
+cache/
+.huggingface/
+hf_cache/
 
-# OS / editor
+# Hugging Face / model caches
+*.parquet
+*.arrow
+
+# OS / editors
 .DS_Store
 Thumbs.db
 .vscode/
