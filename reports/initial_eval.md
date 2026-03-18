@@ -1,12 +1,12 @@
-\# Initial Evaluation: Base Model vs Fine-Tuned Adapter
+# Initial Evaluation: Base Model vs Fine-Tuned Adapter
 
 
 
-\## Overview
+## Overview
 
 
 
-This document summarizes a first-pass qualitative comparison between the base \*\*Qwen2.5-7B-Instruct\*\* model and a \*\*QLoRA fine-tuned adapter\*\* trained on the \*\*HuggingFaceH4/no\_robots\*\* dataset.
+This document summarizes a first-pass qualitative comparison between the base **Qwen2.5-7B-Instruct** model and a **QLoRA fine-tuned adapter** trained on the **HuggingFaceH4/no_robots** dataset.
 
 
 
@@ -14,7 +14,7 @@ The goal of this evaluation was not to prove benchmark superiority, but to exami
 
 
 
-\## General Pattern
+## General Pattern
 
 
 
@@ -26,90 +26,84 @@ The clearest overall pattern was:
 
 
 
-\- more direct and literal instruction-following
-
-\- more concise or implementation-oriented responses in some cases
-
-\- occasional loss of technical precision or robustness
-
-\- mixed impact on overall response quality
+- more direct and literal instruction-following
+- more concise or implementation-oriented responses in some cases
+- occasional loss of technical precision or robustness
+- mixed impact on overall response quality
 
 
 
-In other words, the fine-tuning run seems to have shifted \*\*style\*\* more clearly than it improved \*\*general capability\*\*.
+In other words, the fine-tuning run seems to have shifted **style** more clearly than it improved **general capability**.
 
 
 
-\---
+---
 
 
 
-\## Example 1: Explaining QLoRA
+## Example 1: Explaining QLoRA
 
 
 
-\### Prompt
+### Prompt
 
 Explain QLoRA in plain English.
 
 
 
-\### Base Model
+### Base Model
 
 The base model gave a broader and more technically grounded explanation. It described QLoRA as an efficient way to fine-tune large language models while avoiding the cost of changing all parameters.
 
 
 
-\### Fine-Tuned Adapter
+### Fine-Tuned Adapter
 
 The fine-tuned adapter gave a cleaner and more beginner-friendly explanation, with a clearer teaching style and a more structured presentation.
 
 
 
-\### Assessment
+### Assessment
 
 The adapter response was easier to read, but it introduced a technical inaccuracy in how it described QLoRA. The base model was slightly less polished stylistically, but more technically reliable.
 
 
 
-\### Takeaway
+### Takeaway
 
 The adapter improved readability and approachability, but sometimes at the cost of precision.
 
 
 
-\---
+---
 
 
 
-\## Example 2: Palindrome Function
+## Example 2: Palindrome Function
 
 
 
-\### Prompt
+### Prompt
 
 Write a short Python function that checks whether a string is a palindrome.
 
 
 
-\### Base Model
+### Base Model
 
 The base model produced a more robust answer. It normalized the string by removing non-alphanumeric characters and converting to lowercase, then compared the cleaned string to its reverse. It also included sample test cases.
 
 
 
-\### Fine-Tuned Adapter
+### Fine-Tuned Adapter
 
 The adapter gave a shorter and more literal answer:
 
 
 
 ```python
-
-def is\_palindrome(s):
-
-&#x20;   return s == s\[::-1]
-
+def is_palindrome(s):
+   return s == s[::-1]
 ```
 
 
@@ -121,7 +115,7 @@ The adapter followed the instruction for a “short” function more directly, b
 
 
 
-\### Takeaway
+### Takeaway
 
 
 
@@ -129,15 +123,15 @@ The adapter tended toward brevity and literalness, while the base model remained
 
 
 
-\---
+---
 
 
 
-\## Example 3: Supervised Learning vs Reinforcement Learning
+## Example 3: Supervised Learning vs Reinforcement Learning
 
 
 
-\### Prompt
+### Prompt
 
 
 
@@ -145,7 +139,7 @@ Summarize the main difference between supervised learning and reinforcement lear
 
 
 
-\### Base Model
+### Base Model
 
 
 
@@ -153,7 +147,7 @@ The base model gave a tighter and more effective summary, contrasting the two ap
 
 
 
-\### Fine-Tuned Adapter
+### Fine-Tuned Adapter
 
 
 
@@ -161,7 +155,7 @@ The adapter gave a correct explanation, but it was more verbose and less discipl
 
 
 
-\### Assessment
+### Assessment
 
 
 
@@ -169,7 +163,7 @@ The base model handled the summarization task better. The adapter did not improv
 
 
 
-\### Takeaway
+### Takeaway
 
 
 
@@ -177,15 +171,15 @@ The fine-tuned adapter did not consistently improve conceptual summarization qua
 
 
 
-\---
+---
 
 
 
-\## Example 4: Coffee Shop Promotion Ideas
+## Example 4: Coffee Shop Promotion Ideas
 
 
 
-\### Prompt
+### Prompt
 
 
 
@@ -193,7 +187,7 @@ Give me three creative ideas for a neighborhood coffee shop promotion.
 
 
 
-\### Base Model
+### Base Model
 
 
 
@@ -201,7 +195,7 @@ The base model gave an elaborate and imaginative answer with strong detail, but 
 
 
 
-\### Fine-Tuned Adapter
+### Fine-Tuned Adapter
 
 
 
@@ -209,15 +203,13 @@ The adapter gave three clearer, more actionable suggestions:
 
 
 
-\- coffee tasting event
-
-\- community art show
-
-\- book club
+- coffee tasting event
+- community art show
+- book club
 
 
 
-\### Assessment
+### Assessment
 
 
 
@@ -225,7 +217,7 @@ In this case, the adapter produced the stronger response. The answer was more co
 
 
 
-\### Takeaway
+### Takeaway
 
 
 
@@ -233,11 +225,11 @@ The adapter sometimes improved usefulness by producing more direct and practical
 
 
 
-\---
+---
 
 
 
-\## Overall Conclusion
+## Overall Conclusion
 
 
 
@@ -249,11 +241,9 @@ Instead, the adapter appears to have shifted the model toward:
 
 
 
-\- more literal instruction-following
-
-\- more concise and practical answers in some settings
-
-\- less nuance or technical precision in others
+- more literal instruction-following
+- more concise and practical answers in some settings
+- less nuance or technical precision in others
 
 
 
@@ -263,7 +253,7 @@ This is still a meaningful result. It demonstrates that single-GPU QLoRA fine-tu
 
 
 
-\## Next Steps
+## Next Steps
 
 
 
@@ -271,13 +261,9 @@ Future evaluation improvements could include:
 
 
 
-\- a larger prompt set
-
-\- task-specific scoring rubrics
-
-\- category-based evaluation by prompt type
-
-\- benchmark-style quantitative assessment
-
-\- comparison across multiple datasets or training configurations
+- a larger prompt set
+- task-specific scoring rubrics
+- category-based evaluation by prompt type
+- benchmark-style quantitative assessment
+- comparison across multiple datasets or training configurations
 
