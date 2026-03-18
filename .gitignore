@@ -22,16 +22,13 @@ adapter_model/
 *.pth
 *.safetensors
 
+# Unsloth cache
+unsloth_compiled_cache/
+
 # Data caches
-data/raw/
-data/processed/
 cache/
 .huggingface/
 hf_cache/
-
-# Hugging Face / model caches
-*.parquet
-*.arrow
 
 # OS / editors
 .DS_Store
